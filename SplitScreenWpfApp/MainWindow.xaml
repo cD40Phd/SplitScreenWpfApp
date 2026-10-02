@@ -1,0 +1,119 @@
+﻿<Window x:Class="SplitScreenWpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SplitScreenWpfApp"
+        mc:Ignorable="d"
+        Title="oneAPI Level Zero - Интерактивный 3D Анализ" Height="650" Width="1000" Background="#111116">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ВЕРХНЯЯ ПАНЕЛЬ С ПОЛЗУНКАМИ (Padding заменен на Margin у Border) -->
+        <Border Grid.Row="0" Background="#1A1A24" Padding="15">
+            <WrapPanel HorizontalAlignment="Center">
+                <!-- Ползунок 1: Задержка -->
+                <StackPanel Orientation="Horizontal" Margin="10,5">
+                    <TextBlock Text="Задержка CPU (Без oneAPI):" Foreground="White" VerticalAlignment="Center" FontSize="12" Width="160"/>
+                    <Slider x:Name="SliderLag" Minimum="0" Maximum="70" Value="15" Width="100" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtLagValue" Text="15%" Foreground="#FF6B6B" VerticalAlignment="Center" FontWeight="Bold" Width="40" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <!-- Ползунок 2: Скорость вращения (StepFrequency заменен на TickFrequency) -->
+                <StackPanel Orientation="Horizontal" Margin="10,5">
+                    <TextBlock Text="Скорость вращения:" Foreground="White" VerticalAlignment="Center" FontSize="12" Width="120"/>
+                    <Slider x:Name="SliderSpeed" Minimum="0" Maximum="5" Value="1.5" TickFrequency="0.1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtSpeedValue" Text="1.5x" Foreground="#4DFF4D" VerticalAlignment="Center" FontWeight="Bold" Width="40" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <!-- Ползунок 3: Выпуклость/Вогнутость (StepFrequency заменен на TickFrequency) -->
+                <StackPanel Orientation="Horizontal" Margin="10,5">
+                    <TextBlock Text="Геометрия (Деформация):" Foreground="White" VerticalAlignment="Center" FontSize="12" Width="150"/>
+                    <Slider x:Name="SliderDeform" Minimum="-0.4" Maximum="0.4" Value="0.0" TickFrequency="0.05" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtDeformValue" Text="0.0" Foreground="#4DA6FF" VerticalAlignment="Center" FontWeight="Bold" Width="40" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <!-- Ползунок 4: Скорость перелива цвета (StepFrequency заменен на TickFrequency) -->
+                <StackPanel Orientation="Horizontal" Margin="10,5">
+                    <TextBlock Text="Скорость перелива:" Foreground="White" VerticalAlignment="Center" FontSize="12" Width="120"/>
+                    <Slider x:Name="SliderColorSpeed" Minimum="0" Maximum="4" Value="1.0" TickFrequency="0.2" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtColorSpeedValue" Text="1.0x" Foreground="#E14DFF" VerticalAlignment="Center" FontWeight="Bold" Width="40" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <!-- Реальные тесты графики Intel Arc (Core Ultra) (открываются в отдельном окне) -->
+                <Button x:Name="BtnArcTests" Content="🧪 Тесты Intel Arc" Click="BtnArcTests_Click"
+                        Margin="10,5" Padding="12,4" Background="#0071C5" Foreground="White"
+                        BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- ЗОНА ДЕМОНСТРАЦИИ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ЛЕВАЯ ПАНЕЛЬ -->
+            <Grid Grid.Column="0" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="СТАНДАРТНЫЙ КОНВЕЙЕР (БЕЗ ONEAPI)" Foreground="#FF6B6B" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                <Viewport3D x:Name="ViewportBefore" Grid.Row="1" Margin="0,10">
+                    <Viewport3D.Camera>
+                        <PerspectiveCamera Position="0,0,5" LookDirection="0,0,-1" UpDirection="0,1,0" FieldOfView="45" />
+                    </Viewport3D.Camera>
+                    <ModelVisual3D x:Name="ModelBefore"/>
+                    <ModelVisual3D>
+                        <ModelVisual3D.Content>
+                            <AmbientLight Color="#888888"/>
+                        </ModelVisual3D.Content>
+                    </ModelVisual3D>
+                </Viewport3D>
+
+                <StackPanel Grid.Row="2" Background="#222">
+                    <TextBlock x:Name="TxtFpsBefore" Text="Кадры в секунду: -- FPS" Foreground="White" FontSize="14" Margin="10,5,10,2"/>
+                    <TextBlock x:Name="TxtTimeBefore" Text="Время кадра: -- мс" Foreground="White" FontSize="14" Margin="10,2,10,10"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Разделитель -->
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" Background="#333"/>
+
+            <!-- ПРАВАЯ ПАНЕЛЬ -->
+            <Grid Grid.Column="2" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="УСКОРЕНИЕ ONEAPI LEVEL ZERO SDK" Foreground="#4DFF4D" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                <Viewport3D x:Name="ViewportAfter" Grid.Row="1" Margin="0,10">
+                    <Viewport3D.Camera>
+                        <PerspectiveCamera Position="0,0,5" LookDirection="0,0,-1" UpDirection="0,1,0" FieldOfView="45" />
+                    </Viewport3D.Camera>
+                    <ModelVisual3D x:Name="ModelAfter"/>
+                    <ModelVisual3D>
+                        <ModelVisual3D.Content>
+                            <AmbientLight Color="#FFFFFF"/>
+                        </ModelVisual3D.Content>
+                    </ModelVisual3D>
+                </Viewport3D>
+
+                <StackPanel Grid.Row="2" Background="#222">
+                    <TextBlock x:Name="TxtFpsAfter" Text="Кадры в секунду: -- FPS" Foreground="White" FontSize="14" Margin="10,5,10,2"/>
+                    <TextBlock x:Name="TxtTimeAfter" Text="Время кадра: -- мс" Foreground="White" FontSize="14" Margin="10,2,10,10"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
